@@ -12,5 +12,6 @@ data class User(
     @ColumnInfo(name = "last_name") val lastName: String?,
     @ColumnInfo(name = "nick_name") val nickName: String?,
     @ColumnInfo(name = "birthday") val birthday: Date?,
-    @ColumnInfo(name = "gender") val gender: String?
+    @ColumnInfo(name = "gender") val gender: String?,
+    @ColumnInfo(name = "note") val note: String?
 )
