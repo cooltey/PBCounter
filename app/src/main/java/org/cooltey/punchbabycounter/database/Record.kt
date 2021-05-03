@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 data class Record(
-    @PrimaryKey val uid: Int,
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
     @ColumnInfo(name = "user_id") val userId: Int,
     @ColumnInfo(name = "level_1") val level1: Long, // Level 1 punch
     @ColumnInfo(name = "level_2") val level2: Long, // Level 2 punch
