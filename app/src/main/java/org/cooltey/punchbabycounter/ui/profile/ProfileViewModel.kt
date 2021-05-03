@@ -1,13 +1,9 @@
 package org.cooltey.punchbabycounter.ui.profile
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
 import androidx.lifecycle.ViewModel
 
-class ProfileViewModel : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
-    }
-    val text: LiveData<String> = _text
+class ProfileViewModel(context: Context) : ViewModel() {
+    private var repo = ProfileRepository(context)
+    var userList = repo.getUserList()
 }

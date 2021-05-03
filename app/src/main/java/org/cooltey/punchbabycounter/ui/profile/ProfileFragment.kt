@@ -3,6 +3,7 @@ package org.cooltey.punchbabycounter.ui.profile
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,12 +31,17 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel = ProfileViewModel(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        profileViewModel.userList.observe(viewLifecycleOwner, {
+            Log.d("Test liveData", it.toString())
+        })
+
+
         binding.profileBirthday.editText?.setOnFocusChangeListener { v, focused ->
             if (focused) {
                 showDatePicker(v)
@@ -65,13 +71,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun save() {
+        val birthday = "01/17/2020"
         val user = User(firstName = binding.profileFirstName.editText.toString(),
             lastName = binding.profileLastName.editText.toString(),
             nickName = binding.profileNickName.editText.toString(),
-            birthday = SimpleDateFormat("MM/dd/yyyy").parse(binding.profileBirthday.editText.toString()),
+            birthday = SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(birthday),
             gender = "M",
             note = binding.profileNote.editText.toString())
-        AppDatabase.db(requireContext()).userDao().insertAll(user)
+//        AppDatabase.db(requireContext()).userDao().insertAll(user)
     }
 
     override fun onDestroyView() {

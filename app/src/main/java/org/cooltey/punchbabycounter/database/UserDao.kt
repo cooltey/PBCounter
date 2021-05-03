@@ -1,15 +1,16 @@
 package org.cooltey.punchbabycounter.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import java.util.*
 
 @Dao
 interface UserDao {
     @Query("SELECT * FROM user")
-    fun getAll(): List<User>
+    fun getAll(): LiveData<List<User>>
 
     @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<User>
+    fun loadAllByIds(userIds: IntArray): LiveData<List<User>>
 
     @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
             "last_name LIKE :last LIMIT 1")
