@@ -6,11 +6,12 @@
 
     <!-- General -->
     <string name="button_save">Save</string>
+    <string name="toast_success">Saved</string>
 
     <!-- Profile -->
     <string name="profile_baby_title">Please enter your baby\'s information.</string>
     <string name="profile_baby_first_name">First name</string>
-    <string name="profile_baby_last_name">First name</string>
+    <string name="profile_baby_last_name">Last name</string>
     <string name="profile_baby_nick_name">Nickname</string>
     <string name="profile_baby_birthday">Birthday</string>
     <string name="profile_baby_gender_male">Male</string>

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
@@ -27,6 +28,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val calendar = Calendar.getInstance()
+    private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    private var currentUserId: Int = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -37,8 +40,23 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profileViewModel.userList.observe(viewLifecycleOwner, {
-            Log.d("Test liveData", it.toString())
+        profileViewModel.getUserById(1).observe(viewLifecycleOwner, {
+            binding.profileFirstName.editText?.setText(it.firstName)
+            binding.profileLastName.editText?.setText(it.lastName)
+            binding.profileNickName.editText?.setText(it.nickName)
+            it.birthday?.let { date ->
+                binding.profileBirthday.editText?.setText(dateFormat.format(date))
+                calendar.timeInMillis = date.time
+            }
+            it.gender?.let { gender ->
+                if (gender == "M") {
+                    binding.profileGenderMale.isChecked = true
+                } else {
+                    binding.profileGenderFemale.isChecked = true
+                }
+            }
+            binding.profileNote.editText?.setText(it.note)
+            currentUserId = it.uid
         })
 
 
@@ -66,19 +84,28 @@ class ProfileFragment : Fragment() {
             calendar.set(Calendar.YEAR, year)
             calendar.set(Calendar.MONTH, monthOfYear)
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            editText?.setText(SimpleDateFormat("MM/dd/yyyy", Locale.US).format(calendar.time))
+            editText?.setText(dateFormat.format(calendar.time))
         }
     }
 
     private fun save() {
-        val birthday = "01/17/2020"
-        val user = User(firstName = binding.profileFirstName.editText.toString(),
-            lastName = binding.profileLastName.editText.toString(),
-            nickName = binding.profileNickName.editText.toString(),
-            birthday = SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(birthday),
-            gender = "M",
-            note = binding.profileNote.editText.toString())
-//        AppDatabase.db(requireContext()).userDao().insertAll(user)
+        var gender = "M"
+        if (binding.profileGenderFemale.isChecked) {
+            gender = "F"
+        }
+        val user = User(uid = currentUserId,
+            firstName = getString(binding.profileFirstName),
+            lastName = getString(binding.profileLastName),
+            nickName = getString(binding.profileNickName),
+            birthday = dateFormat.parse(getString(binding.profileBirthday)),
+            gender = gender,
+            note = getString(binding.profileNote))
+
+        profileViewModel.save(user) { Toast.makeText(requireContext(), R.string.toast_success, Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun getString(view: TextInputLayout): String {
+        return view.editText?.text.toString()
     }
 
     override fun onDestroyView() {
