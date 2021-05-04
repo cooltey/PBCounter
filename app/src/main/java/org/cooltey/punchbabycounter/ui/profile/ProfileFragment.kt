@@ -22,7 +22,6 @@ import org.cooltey.punchbabycounter.databinding.FragmentProfileBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class ProfileFragment : Fragment() {
     private lateinit var profileViewModel: ProfileViewModel
     private var _binding: FragmentProfileBinding? = null
