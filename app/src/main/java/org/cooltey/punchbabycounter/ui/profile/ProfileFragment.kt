@@ -34,12 +34,13 @@ class ProfileFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         profileViewModel = ProfileViewModel(requireContext())
+        currentUserId = 1 // TODO: select the activated one using sharedElement
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profileViewModel.getUserById(1).observe(viewLifecycleOwner, {
+        profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
             binding.profileFirstName.editText?.setText(it.firstName)
             binding.profileLastName.editText?.setText(it.lastName)
             binding.profileNickName.editText?.setText(it.nickName)
