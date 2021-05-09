@@ -41,22 +41,24 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
-            binding.profileFirstName.editText?.setText(it.firstName)
-            binding.profileLastName.editText?.setText(it.lastName)
-            binding.profileNickName.editText?.setText(it.nickName)
-            it.birthday?.let { date ->
-                binding.profileBirthday.editText?.setText(dateFormat.format(date))
-                calendar.timeInMillis = date.time
-            }
-            it.gender?.let { gender ->
-                if (gender == "M") {
-                    binding.profileGenderMale.isChecked = true
-                } else {
-                    binding.profileGenderFemale.isChecked = true
+            it?.let {
+                binding.profileFirstName.editText?.setText(it.firstName)
+                binding.profileLastName.editText?.setText(it.lastName)
+                binding.profileNickName.editText?.setText(it.nickName)
+                it.birthday?.let { date ->
+                    binding.profileBirthday.editText?.setText(dateFormat.format(date))
+                    calendar.timeInMillis = date.time
                 }
+                it.gender?.let { gender ->
+                    if (gender == "M") {
+                        binding.profileGenderMale.isChecked = true
+                    } else {
+                        binding.profileGenderFemale.isChecked = true
+                    }
+                }
+                binding.profileNote.editText?.setText(it.note)
+                currentUserId = it.uid
             }
-            binding.profileNote.editText?.setText(it.note)
-            currentUserId = it.uid
         })
 
 
