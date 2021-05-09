@@ -1,6 +1,10 @@
 package org.cooltey.punchbabycounter.ui.home
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +30,21 @@ class HomeFragment : Fragment() {
 
         binding.touchCircleLeft.setOnClickListener {
             Toast.makeText(requireContext(), "Left clicked", Toast.LENGTH_SHORT).show()
+            vibratePhone(200)
         }
 
         binding.touchCircleRight.setOnClickListener {
             Toast.makeText(requireContext(), "Right clicked", Toast.LENGTH_LONG).show()
+            vibratePhone(400)
+        }
+    }
+
+    private fun vibratePhone(vibrateDuration: Long) {
+        val vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(vibrateDuration)
         }
     }
 }
