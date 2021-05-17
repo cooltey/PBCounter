@@ -10,7 +10,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
 
     var getUserList = repo.getUserList()
 
-    fun getUserById(id: Int): LiveData<User> {
+    fun getUserById(id: Long): LiveData<User> {
         return repo.getUserById(id)
     }
 

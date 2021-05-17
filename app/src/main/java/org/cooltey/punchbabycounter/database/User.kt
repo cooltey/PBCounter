@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 data class User(
-    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @PrimaryKey(autoGenerate = true) var uid: Long = 0,
     @ColumnInfo(name = "first_name") val firstName: String?,
     @ColumnInfo(name = "last_name") val lastName: String?,
     @ColumnInfo(name = "nick_name") val nickName: String?,

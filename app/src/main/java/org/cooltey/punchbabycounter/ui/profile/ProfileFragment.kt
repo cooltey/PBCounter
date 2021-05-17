@@ -2,23 +2,19 @@ package org.cooltey.punchbabycounter.ui.profile
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.opengl.Visibility
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.room.Room
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.cooltey.punchbabycounter.R
-import org.cooltey.punchbabycounter.database.AppDatabase
 import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.databinding.FragmentProfileBinding
+import org.cooltey.punchbabycounter.utils.Prefs
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,47 +24,73 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    private var currentUserId: Int = -1
+    private var currentUserId = -1L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         profileViewModel = ProfileViewModel(requireContext())
-        currentUserId = 1 // TODO: select the activated one using sharedElement
+        currentUserId = Prefs.getCurrentId(requireActivity())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
-            it?.let {
-                binding.profileFirstName.editText?.setText(it.firstName)
-                binding.profileLastName.editText?.setText(it.lastName)
-                binding.profileNickName.editText?.setText(it.nickName)
-                it.birthday?.let { date ->
-                    binding.profileBirthday.editText?.setText(dateFormat.format(date))
-                    calendar.timeInMillis = date.time
-                }
-                it.gender?.let { gender ->
-                    if (gender == "M") {
-                        binding.profileGenderMale.isChecked = true
-                    } else {
-                        binding.profileGenderFemale.isChecked = true
+        if (currentUserId <= 0) {
+            profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
+                it?.let {
+                    binding.profileFirstName.editText?.setText(it.firstName)
+                    binding.profileLastName.editText?.setText(it.lastName)
+                    binding.profileNickName.editText?.setText(it.nickName)
+                    it.birthday?.let { date ->
+                        binding.profileBirthday.editText?.setText(dateFormat.format(date))
+                        calendar.timeInMillis = date.time
                     }
+                    it.gender?.let { gender ->
+                        if (gender == "M") {
+                            binding.profileGenderMale.isChecked = true
+                        } else {
+                            binding.profileGenderFemale.isChecked = true
+                        }
+                    }
+                    binding.profileNote.editText?.setText(it.note)
+                    currentUserId = it.uid
                 }
-                binding.profileNote.editText?.setText(it.note)
-                currentUserId = it.uid
-            }
-        })
-
+            })
+        }
 
         binding.profileBirthday.editText?.setOnFocusChangeListener { v, focused ->
             if (focused) {
                 showDatePicker(v)
             }
         }
+
         binding.profileButtonSave.setOnClickListener {
             save()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showViews()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun showViews() {
+        if (currentUserId <= 0) {
+            binding.newProfileButton.visibility = View.VISIBLE
+            binding.scrollViewContainer.visibility = View.GONE
+            binding.newProfileButton.setOnClickListener {
+                binding.newProfileButton.visibility = View.GONE
+                binding.scrollViewContainer.visibility = View.VISIBLE
+            }
+        } else {
+            binding.newProfileButton.visibility = View.GONE
+            binding.scrollViewContainer.visibility = View.VISIBLE
         }
     }
 
@@ -95,23 +117,25 @@ class ProfileFragment : Fragment() {
         if (binding.profileGenderFemale.isChecked) {
             gender = "F"
         }
-        val user = User(uid = currentUserId,
-            firstName = getString(binding.profileFirstName),
+        val user = User(firstName = getString(binding.profileFirstName),
             lastName = getString(binding.profileLastName),
             nickName = getString(binding.profileNickName),
             birthday = dateFormat.parse(getString(binding.profileBirthday)),
             gender = gender,
             note = getString(binding.profileNote))
 
-        profileViewModel.save(user) { Toast.makeText(requireContext(), R.string.toast_success, Toast.LENGTH_SHORT).show() }
+        // Update
+        if (currentUserId > 0) {
+            user.uid = currentUserId
+        }
+
+        profileViewModel.save(user) {
+            Toast.makeText(requireContext(), R.string.toast_success, Toast.LENGTH_SHORT).show()
+            Prefs.saveCurrentId(requireActivity(), it)
+        }
     }
 
     private fun getString(view: TextInputLayout): String {
         return view.editText?.text.toString()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

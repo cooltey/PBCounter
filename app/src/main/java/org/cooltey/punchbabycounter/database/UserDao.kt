@@ -10,17 +10,17 @@ interface UserDao {
     fun getAll(): LiveData<List<User>>
 
     @Query("SELECT * FROM user WHERE uid IN (:userId)")
-    fun getById(userId: Int): LiveData<User>
+    fun getById(userId: Long): LiveData<User>
 
     @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
             "last_name LIKE :last LIMIT 1")
     fun findByName(first: String, last: String): User
 
     @Insert
-    fun insertAll(vararg users: User)
+    fun insert(user: User): Long
 
     @Update
-    fun updateAll(vararg users: User)
+    fun update(user: User)
 
     @Delete
     fun delete(user: User)

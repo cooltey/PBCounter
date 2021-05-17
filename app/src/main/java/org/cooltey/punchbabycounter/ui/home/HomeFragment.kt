@@ -15,9 +15,10 @@ import org.cooltey.punchbabycounter.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -29,14 +30,25 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.touchCircleLeft.setOnClickListener {
-            Toast.makeText(requireContext(), "Left clicked", Toast.LENGTH_SHORT).show()
+            homeViewModel.leftCounterIncrement()
+            homeViewModel.leftCounter.observe(viewLifecycleOwner, {
+                gradientCircleUpdate(it, binding.touchCircleLeft)
+            })
             vibratePhone(200)
         }
 
         binding.touchCircleRight.setOnClickListener {
-            Toast.makeText(requireContext(), "Right clicked", Toast.LENGTH_LONG).show()
+            homeViewModel.rightCounterIncrement()
+            homeViewModel.rightCounter.observe(viewLifecycleOwner, {
+                gradientCircleUpdate(it, binding.touchCircleRight)
+            })
             vibratePhone(400)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun vibratePhone(vibrateDuration: Long) {
@@ -46,5 +58,10 @@ class HomeFragment : Fragment() {
         } else {
             vibrator.vibrate(vibrateDuration)
         }
+    }
+
+    private fun gradientCircleUpdate(counter: Int, view: View) {
+        view.alpha = counter.toFloat() / homeViewModel.maxCount
+        // TODO: return to normal opacity after %d seconds
     }
 }

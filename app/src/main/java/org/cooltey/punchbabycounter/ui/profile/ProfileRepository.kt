@@ -11,7 +11,7 @@ import org.cooltey.punchbabycounter.database.UserDao
 
 class ProfileRepository(context: Context) {
     fun interface Callback {
-        fun onComplete()
+        fun onComplete(userId: Long)
     }
     private var userDao = AppDatabase.db(context).userDao()
     private var userList = userDao.getAll()
@@ -20,25 +20,25 @@ class ProfileRepository(context: Context) {
         return userList
     }
 
-    fun getUserById(id: Int): LiveData<User> {
+    fun getUserById(id: Long): LiveData<User> {
         return userDao.getById(id)
     }
 
     fun insertUser(user: User, callback: Callback) {
-        Observable.fromCallable { userDao.insertAll(user) }
+        Observable.fromCallable { userDao.insert(user) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                callback.onComplete()
+                callback.onComplete(it)
             }
     }
 
     fun updateUser(user: User, callback: Callback) {
-        Observable.fromCallable { userDao.updateAll(user) }
+        Observable.fromCallable { userDao.update(user) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                callback.onComplete()
+                callback.onComplete(user.uid)
             }
     }
 }

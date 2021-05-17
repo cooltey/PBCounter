@@ -17,4 +17,8 @@
     <string name="profile_baby_gender_male">Male</string>
     <string name="profile_baby_gender_female">Female</string>
     <string name="profile_baby_note">Note for yourself.</string>
+    <string name="profile_baby_new_profile">New profile</string>
+
+    <!-- Prefs -->
+    <string name="prefs_current_id">currentId</string>
 </resources>
