@@ -6,8 +6,14 @@ import androidx.lifecycle.ViewModel
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    private val _leftCounter = MutableLiveData<Int>().apply {
+        value = 0
     }
-    val text: LiveData<String> = _text
+    val leftCounter: LiveData<Int> = _leftCounter
+
+
+    private val _rightCounter = MutableLiveData<Int>().apply {
+        value = 0
+    }
+    val rightCounter: LiveData<Int> = _rightCounter
 }
