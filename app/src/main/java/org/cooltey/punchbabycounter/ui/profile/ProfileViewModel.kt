@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import org.cooltey.punchbabycounter.database.User
+import org.cooltey.punchbabycounter.repository.UserRepository
 
 class ProfileViewModel(context: Context) : ViewModel() {
-    private var repo = ProfileRepository(context)
+
+    private var repo = UserRepository(context)
 
     var getUserList = repo.getUserList()
 
@@ -14,7 +16,7 @@ class ProfileViewModel(context: Context) : ViewModel() {
         return repo.getUserById(id)
     }
 
-    fun save(user: User, callback: ProfileRepository.Callback) {
+    fun save(user: User, callback: UserRepository.Callback) {
         if (user.uid <= 0) {
             repo.insertUser(user, callback)
         } else {

@@ -1,4 +1,4 @@
-package org.cooltey.punchbabycounter.ui.profile
+package org.cooltey.punchbabycounter.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -7,9 +7,8 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.cooltey.punchbabycounter.database.AppDatabase
 import org.cooltey.punchbabycounter.database.User
-import org.cooltey.punchbabycounter.database.UserDao
 
-class ProfileRepository(context: Context) {
+class UserRepository(context: Context) {
     fun interface Callback {
         fun onComplete(userId: Long)
     }

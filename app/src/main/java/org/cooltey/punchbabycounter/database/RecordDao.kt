@@ -7,19 +7,22 @@ import java.util.*
 @Dao
 interface RecordDao {
     @Query("SELECT * FROM record")
-    fun getAll(): List<Record>
+    fun getAll(): LiveData<List<Record>>
 
     @Query("SELECT * FROM record WHERE user_id IN (:userId)")
-    fun getAllByUserId(userId: Int): List<Record>
+    fun getAllByUserId(userId: Long): LiveData<List<Record>>
 
     @Query("SELECT * FROM record WHERE uid IN (:recordId)")
-    fun getById(recordId: Int): LiveData<Record>
+    fun getById(recordId: Long): LiveData<Record>
 
     @Query("SELECT * FROM record WHERE user_id = :userId AND date = :date")
-    fun findByDate(userId: Int, date: Date): Record
+    fun findByDate(userId: Long, date: Date): LiveData<Record>
 
     @Insert
-    fun insertAll(vararg records: Record)
+    fun insert(vararg records: Record): Long
+
+    @Update
+    fun update(record: Record)
 
     @Delete
     fun delete(record: Record)

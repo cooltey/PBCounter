@@ -8,10 +8,10 @@ import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import org.cooltey.punchbabycounter.databinding.FragmentHomeBinding
+import org.cooltey.punchbabycounter.utils.Prefs
 
 class HomeFragment : Fragment() {
 
@@ -19,10 +19,12 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var homeViewModel: HomeViewModel
+    private var currentUserId = -1L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        currentUserId = Prefs.getCurrentId(requireActivity())
         return binding.root
     }
 
