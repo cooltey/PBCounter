@@ -36,7 +36,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (currentUserId <= 0) {
+        if (currentUserId > 0) {
             profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
                 it?.let {
                     binding.profileFirstName.editText?.setText(it.firstName)
