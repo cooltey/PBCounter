@@ -7,10 +7,10 @@ import java.util.*
 
 @Entity
 data class Record(
-    @PrimaryKey(autoGenerate = true) val uid: Long = 0,
+    @PrimaryKey(autoGenerate = true) var uid: Long = 0,
     @ColumnInfo(name = "user_id") val userId: Long,
     @ColumnInfo(name = "level_1") val level1: Long, // Level 1 punch
     @ColumnInfo(name = "level_2") val level2: Long, // Level 2 punch
     @ColumnInfo(name = "date") val date: Date,
-    @ColumnInfo(name = "note") val note: String?
+    @ColumnInfo(name = "note") var note: String? = null
 )

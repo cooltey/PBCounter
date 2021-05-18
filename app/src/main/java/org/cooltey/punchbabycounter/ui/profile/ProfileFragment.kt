@@ -19,9 +19,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ProfileFragment : Fragment() {
-    private lateinit var profileViewModel: ProfileViewModel
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var profileViewModel: ProfileViewModel
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private var currentUserId = -1L

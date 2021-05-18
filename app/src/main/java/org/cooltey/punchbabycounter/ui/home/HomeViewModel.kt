@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.cooltey.punchbabycounter.database.Record
-import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.repository.RecordRepository
-import org.cooltey.punchbabycounter.repository.UserRepository
-import java.util.*
+import org.cooltey.punchbabycounter.utils.GeneralUtil
 
 class HomeViewModel(context: Context) : ViewModel() {
 
@@ -16,10 +14,10 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     val maxCount = 50
 
-    private val _leftCounter = MutableLiveData<Int>().apply {
+    private val _leftCounter = MutableLiveData<Long>().apply {
         value = 0
     }
-    val leftCounter: LiveData<Int> = _leftCounter
+    val leftCounter: LiveData<Long> = _leftCounter
     fun leftCounterIncrement() {
         _leftCounter.value?.let {
             if (it < maxCount) {
@@ -28,10 +26,10 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
-    private val _rightCounter = MutableLiveData<Int>().apply {
+    private val _rightCounter = MutableLiveData<Long>().apply {
         value = 0
     }
-    val rightCounter: LiveData<Int> = _rightCounter
+    val rightCounter: LiveData<Long> = _rightCounter
     fun rightCounterIncrement() {
         _rightCounter.value?.let {
             if (it < maxCount) {
@@ -41,7 +39,7 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     fun getRecordByUserId(userId: Long): LiveData<Record> {
-        return recordRepository.getRecordByDate(userId, Date())
+        return recordRepository.getRecordByDate(userId, GeneralUtil.getToday())
     }
 
     fun save(record: Record, callback: RecordRepository.Callback) {

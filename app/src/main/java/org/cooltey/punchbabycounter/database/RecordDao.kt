@@ -19,7 +19,7 @@ interface RecordDao {
     fun findByDate(userId: Long, date: Date): LiveData<Record>
 
     @Insert
-    fun insert(vararg records: Record): Long
+    fun insert(record: Record): Long
 
     @Update
     fun update(record: Record)
@@ -27,4 +27,3 @@ interface RecordDao {
     @Delete
     fun delete(record: Record)
 }
-
