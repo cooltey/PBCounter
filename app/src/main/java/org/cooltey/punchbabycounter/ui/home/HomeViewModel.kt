@@ -1,6 +1,7 @@
 package org.cooltey.punchbabycounter.ui.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,14 @@ class HomeViewModel(context: Context) : ViewModel() {
                 _rightCounter.value = it + 1
             }
         }
+    }
+
+    private val _recordNote = MutableLiveData<String>().apply {
+        value = null
+    }
+    val recordNote: LiveData<String> = _recordNote
+    fun updateRecordNote(text: String) {
+        _recordNote.value = text
     }
 
     fun getRecordByUserId(userId: Long): LiveData<Record> {

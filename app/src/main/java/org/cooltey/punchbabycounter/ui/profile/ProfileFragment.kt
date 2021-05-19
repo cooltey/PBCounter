@@ -2,7 +2,6 @@ package org.cooltey.punchbabycounter.ui.profile
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.textfield.TextInputLayout
 import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.databinding.FragmentProfileBinding
+import org.cooltey.punchbabycounter.utils.GeneralUtil
 import org.cooltey.punchbabycounter.utils.Prefs
 import java.text.SimpleDateFormat
 import java.util.*
@@ -118,12 +117,12 @@ class ProfileFragment : Fragment() {
         if (binding.profileGenderFemale.isChecked) {
             gender = "F"
         }
-        val user = User(firstName = getString(binding.profileFirstName),
-            lastName = getString(binding.profileLastName),
-            nickName = getString(binding.profileNickName),
-            birthday = dateFormat.parse(getString(binding.profileBirthday)),
+        val user = User(firstName = GeneralUtil.getEditString(binding.profileFirstName),
+            lastName = GeneralUtil.getEditString(binding.profileLastName),
+            nickName = GeneralUtil.getEditString(binding.profileNickName),
+            birthday = dateFormat.parse(GeneralUtil.getEditString(binding.profileBirthday)),
             gender = gender,
-            note = getString(binding.profileNote))
+            note = GeneralUtil.getEditString(binding.profileNote))
 
         // Update
         if (currentUserId > 0) {
@@ -134,9 +133,5 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), R.string.toast_success, Toast.LENGTH_SHORT).show()
             Prefs.saveCurrentId(requireActivity(), it)
         }
-    }
-
-    private fun getString(view: TextInputLayout): String {
-        return view.editText?.text.toString()
     }
 }

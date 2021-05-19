@@ -1,6 +1,7 @@
 package org.cooltey.punchbabycounter.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -37,17 +38,21 @@ class RecordRepository(context: Context) {
         Observable.fromCallable { recordDao.insert(record) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe({
                 callback.onComplete(it)
-            }
+            }, { catch ->
+                Log.d("insertRecord", catch.toString())
+            })
     }
 
     fun updateRecord(record: Record, callback: Callback) {
         Observable.fromCallable { recordDao.update(record) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe({
                 callback.onComplete(record.uid)
-            }
+            }, { catch ->
+                Log.d("updateRecord", catch.toString())
+            })
     }
 }

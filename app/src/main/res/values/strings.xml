@@ -19,6 +19,9 @@
     <string name="profile_baby_note">Note for yourself.</string>
     <string name="profile_baby_new_profile">New profile</string>
 
+    <!-- Home -->
+    <string name="home_record_note">Note for today</string>
+
     <!-- Prefs -->
     <string name="prefs_current_id">currentId</string>
 </resources>

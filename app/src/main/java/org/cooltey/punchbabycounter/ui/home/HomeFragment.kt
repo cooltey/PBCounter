@@ -8,16 +8,15 @@ import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import org.cooltey.punchbabycounter.MainActivity
 import org.cooltey.punchbabycounter.database.Record
 import org.cooltey.punchbabycounter.databinding.FragmentHomeBinding
-import org.cooltey.punchbabycounter.ui.profile.ProfileViewModel
 import org.cooltey.punchbabycounter.utils.GeneralUtil
 import org.cooltey.punchbabycounter.utils.Prefs
-import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -42,9 +41,11 @@ class HomeFragment : Fragment() {
             (requireActivity() as MainActivity).goToProfileTab()
         }
 
-        // TODO: navigate to profile page if userId = -1
         homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, {
             recordData = it
+            it.note?.let { note ->
+                binding.recordNote.editText?.setText(note, TextView.BufferType.EDITABLE)
+            }
         })
 
         binding.touchCircleLeft.setOnClickListener {
@@ -62,6 +63,10 @@ class HomeFragment : Fragment() {
                 vibratePhone(400)
             })
         }
+
+        binding.recordNote.editText?.addTextChangedListener {
+            homeViewModel.updateRecordNote(it.toString())
+        }
     }
 
     override fun onPause() {
@@ -78,30 +83,34 @@ class HomeFragment : Fragment() {
         if (currentUserId <= 0) {
             return
         }
+        // TODO: not sure it is a proper way of doing multiple observe.
         homeViewModel.leftCounter.observe(viewLifecycleOwner, { leftCounter ->
             homeViewModel.rightCounter.observe(viewLifecycleOwner, { rightCounter ->
-                homeViewModel.save(buildRecordData(leftCounter, rightCounter)) {
-                    // TODO: show note dialog?
-                    Toast.makeText(requireContext(), "Counter updated", Toast.LENGTH_SHORT).show()
-                }
+                homeViewModel.recordNote.observe(viewLifecycleOwner, { recordNote ->
+                    homeViewModel.save(buildRecordData(leftCounter, rightCounter, recordNote)) {
+                        // TODO: show note dialog?
+                        Toast.makeText(requireContext(), "Counter updated", Toast.LENGTH_SHORT).show()
+                    }
+                })
             })
         })
     }
 
     // TODO: have flexible levels
-    private fun buildRecordData(level1: Long = 0, level2: Long = 0): Record {
+    private fun buildRecordData(level1: Long = 0, level2: Long = 0, note: String? = null): Record {
         return recordData?.let {
             Record(uid = it.uid,
                 userId = currentUserId,
                 level1 = level1 + it.level1,
                 level2 = level2 + it.level2,
                 date = it.date,
-                note = it.note)
+                note = note)
         } ?: run {
             Record(userId = currentUserId,
                 level1 = level1,
                 level2 = level2,
-                date = GeneralUtil.getToday())
+                date = GeneralUtil.getToday(),
+                note = note)
         }
     }
 
