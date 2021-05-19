@@ -19,4 +19,16 @@ object Prefs {
         return sharedPref.getLong(activity.getString(R.string.prefs_current_id), -1)
     }
 
+    fun enableVibration(activity: Activity, enabled: Boolean) {
+        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
+        with (sharedPref.edit()) {
+            putBoolean(activity.getString(R.string.prefs_enable_vibration), enabled)
+            apply()
+        }
+    }
+
+    fun enableVibration(activity: Activity): Boolean {
+        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return false
+        return sharedPref.getBoolean(activity.getString(R.string.prefs_enable_vibration), false)
+    }
 }

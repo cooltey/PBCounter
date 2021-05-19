@@ -13,10 +13,13 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import org.cooltey.punchbabycounter.MainActivity
+import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.Record
 import org.cooltey.punchbabycounter.databinding.FragmentHomeBinding
 import org.cooltey.punchbabycounter.utils.GeneralUtil
 import org.cooltey.punchbabycounter.utils.Prefs
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -41,32 +44,40 @@ class HomeFragment : Fragment() {
             (requireActivity() as MainActivity).goToProfileTab()
         }
 
-        homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, {
-            recordData = it
-            it.note?.let { note ->
+        binding.todayDate.text = showToday()
+
+        homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, { record ->
+            recordData = record
+
+            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, record.level1)
+            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, record.level2)
+
+            binding.touchCircleLeft.setOnClickListener {
+                homeViewModel.leftCounterIncrement()
+                homeViewModel.leftCounter.observe(viewLifecycleOwner, {
+                    binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, (record.level1 + it))
+                    gradientCircleUpdate(it, binding.touchCircleLeft)
+                    vibratePhone(200)
+                })
+            }
+
+            binding.touchCircleRight.setOnClickListener {
+                homeViewModel.rightCounterIncrement()
+                homeViewModel.rightCounter.observe(viewLifecycleOwner, {
+                    binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, (record.level2 + it))
+                    gradientCircleUpdate(it, binding.touchCircleRight)
+                    vibratePhone(400)
+                })
+            }
+
+            binding.recordNote.editText?.addTextChangedListener {
+                homeViewModel.updateRecordNote(it.toString())
+            }
+
+            record.note?.let { note ->
                 binding.recordNote.editText?.setText(note, TextView.BufferType.EDITABLE)
             }
         })
-
-        binding.touchCircleLeft.setOnClickListener {
-            homeViewModel.leftCounterIncrement()
-            homeViewModel.leftCounter.observe(viewLifecycleOwner, {
-                gradientCircleUpdate(it, binding.touchCircleLeft)
-                vibratePhone(200)
-            })
-        }
-
-        binding.touchCircleRight.setOnClickListener {
-            homeViewModel.rightCounterIncrement()
-            homeViewModel.rightCounter.observe(viewLifecycleOwner, {
-                gradientCircleUpdate(it, binding.touchCircleRight)
-                vibratePhone(400)
-            })
-        }
-
-        binding.recordNote.editText?.addTextChangedListener {
-            homeViewModel.updateRecordNote(it.toString())
-        }
     }
 
     override fun onPause() {
@@ -79,6 +90,12 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    private fun showToday(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
     private fun save() {
         if (currentUserId <= 0) {
             return
@@ -87,9 +104,11 @@ class HomeFragment : Fragment() {
         homeViewModel.leftCounter.observe(viewLifecycleOwner, { leftCounter ->
             homeViewModel.rightCounter.observe(viewLifecycleOwner, { rightCounter ->
                 homeViewModel.recordNote.observe(viewLifecycleOwner, { recordNote ->
-                    homeViewModel.save(buildRecordData(leftCounter, rightCounter, recordNote)) {
-                        // TODO: show note dialog?
-                        Toast.makeText(requireContext(), "Counter updated", Toast.LENGTH_SHORT).show()
+                    val newRecordData = buildRecordData(leftCounter, rightCounter, recordNote)
+                    if (newRecordData != recordData) {
+                        homeViewModel.save(newRecordData) {
+                            // ignore
+                        }
                     }
                 })
             })
@@ -115,11 +134,18 @@ class HomeFragment : Fragment() {
     }
 
     private fun vibratePhone(vibrateDuration: Long) {
-        val vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(VibrationEffect.createOneShot(vibrateDuration, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            vibrator.vibrate(vibrateDuration)
+        if (Prefs.enableVibration(requireActivity())) {
+            val vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= 26) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        vibrateDuration,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                vibrator.vibrate(vibrateDuration)
+            }
         }
     }
 

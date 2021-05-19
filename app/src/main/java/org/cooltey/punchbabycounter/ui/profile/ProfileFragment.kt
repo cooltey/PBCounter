@@ -25,12 +25,14 @@ class ProfileFragment : Fragment() {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private var currentUserId = -1L
+    private var enableVibration = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         profileViewModel = ProfileViewModel(requireContext())
         currentUserId = Prefs.getCurrentId(requireActivity())
+        enableVibration = Prefs.enableVibration(requireActivity())
         return binding.root
     }
 
@@ -54,9 +56,14 @@ class ProfileFragment : Fragment() {
                         }
                     }
                     binding.profileNote.editText?.setText(it.note)
+                    binding.profileVibration.isChecked = enableVibration
                     currentUserId = it.uid
                 }
             })
+        }
+
+        binding.profileVibration.setOnCheckedChangeListener { _, b ->
+            enableVibration = b
         }
 
         binding.profileBirthday.editText?.setOnFocusChangeListener { v, focused ->
@@ -132,6 +139,7 @@ class ProfileFragment : Fragment() {
         profileViewModel.save(user) {
             Toast.makeText(requireContext(), R.string.toast_success, Toast.LENGTH_SHORT).show()
             Prefs.saveCurrentId(requireActivity(), it)
+            Prefs.enableVibration(requireActivity(), enableVibration)
         }
     }
 }

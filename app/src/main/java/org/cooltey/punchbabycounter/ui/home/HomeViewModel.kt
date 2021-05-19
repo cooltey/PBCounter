@@ -21,9 +21,7 @@ class HomeViewModel(context: Context) : ViewModel() {
     val leftCounter: LiveData<Long> = _leftCounter
     fun leftCounterIncrement() {
         _leftCounter.value?.let {
-            if (it < maxCount) {
-                _leftCounter.value = it + 1
-            }
+            _leftCounter.value = it + 1
         }
     }
 
@@ -33,9 +31,7 @@ class HomeViewModel(context: Context) : ViewModel() {
     val rightCounter: LiveData<Long> = _rightCounter
     fun rightCounterIncrement() {
         _rightCounter.value?.let {
-            if (it < maxCount) {
-                _rightCounter.value = it + 1
-            }
+            _rightCounter.value = it + 1
         }
     }
 

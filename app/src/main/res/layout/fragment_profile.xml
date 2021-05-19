@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:paddingBottom="12dp"
+                android:theme="@style/AppTextInputLayoutStyle"
                 app:layout_constraintTop_toBottomOf="@id/profileTitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/profileLastName"
@@ -61,6 +62,7 @@
                 android:id="@+id/profileLastName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:theme="@style/AppTextInputLayoutStyle"
                 app:layout_constraintTop_toBottomOf="@id/profileTitle"
                 app:layout_constraintStart_toEndOf="@id/profileFirstName"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp"
+                android:theme="@style/AppTextInputLayoutStyle"
                 app:layout_constraintTop_toBottomOf="@id/profileFirstName">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -115,6 +118,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp"
+                android:theme="@style/AppTextInputLayoutStyle"
                 app:layout_constraintTop_toBottomOf="@id/profileGender">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -129,6 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp"
+                android:theme="@style/AppTextInputLayoutStyle"
                 app:layout_constraintTop_toBottomOf="@id/profileBirthday">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -139,6 +144,14 @@
                     android:hint="@string/profile_baby_note" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/profileVibration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_baby_enable_vibration"
+                app:layout_constraintTop_toBottomOf="@id/profileNote"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <Button
                 android:id="@+id/profileButtonSave"
