@@ -8,6 +8,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.cooltey.punchbabycounter.database.AppDatabase
 import org.cooltey.punchbabycounter.database.Record
+import org.cooltey.punchbabycounter.database.Summary
 import org.cooltey.punchbabycounter.database.User
 import java.util.*
 
@@ -32,6 +33,10 @@ class RecordRepository(context: Context) {
 
     fun getRecordByDate(userId: Long, date: Date): LiveData<Record> {
         return recordDao.findByDate(userId, date)
+    }
+
+    fun getSummaryRecordByUserId(userId: Long): LiveData<Summary> {
+        return recordDao.getSummaryById(userId)
     }
 
     fun insertRecord(record: Record, callback: Callback) {

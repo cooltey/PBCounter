@@ -49,8 +49,11 @@ class HomeFragment : Fragment() {
         homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, { record ->
             recordData = record
 
-            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, record.level1)
-            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, record.level2)
+            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, record?.level1 ?: 0)
+            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, record?.level2 ?: 0)
+            record?.let {
+                binding.recordNote.editText?.setText(it.note, TextView.BufferType.EDITABLE)
+            }
 
             binding.touchCircleLeft.setOnClickListener {
                 homeViewModel.leftCounterIncrement()
@@ -72,10 +75,6 @@ class HomeFragment : Fragment() {
 
             binding.recordNote.editText?.addTextChangedListener {
                 homeViewModel.updateRecordNote(it.toString())
-            }
-
-            record.note?.let { note ->
-                binding.recordNote.editText?.setText(note, TextView.BufferType.EDITABLE)
             }
         })
     }
