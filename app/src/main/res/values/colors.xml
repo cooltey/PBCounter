@@ -5,6 +5,7 @@
     <color name="colorSecond">#F8DB7E</color>
     <color name="colorSecondVariant">#F7D25D</color>
     <color name="colorBackground">#CCBD8A</color>
+    <color name="cardColorBackground">#F5E8BC</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
