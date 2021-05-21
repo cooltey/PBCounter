@@ -26,7 +26,7 @@
     <string name="home_right_level_prefix">L2: %s</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_summary_title">Lifetime summary</string>
+    <string name="dashboard_summary_title">Lifetime summary for %s</string>
     <string name="dashboard_total_counts">Total: %s</string>
     <string name="dashboard_level_1_counts">Level 1: %s</string>
     <string name="dashboard_level_2_counts">Level 2: %s</string>

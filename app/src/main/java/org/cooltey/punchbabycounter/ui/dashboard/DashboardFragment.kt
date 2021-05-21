@@ -40,6 +40,10 @@ class DashboardFragment : Fragment() {
             (requireActivity() as MainActivity).goToProfileTab()
         }
 
+        dashboardViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
+            binding.dashboardSummary.text = getString(R.string.dashboard_summary_title, it.nickName)
+        })
+
         dashboardViewModel.getSummaryByUserId(currentUserId).observe(viewLifecycleOwner, {
             binding.dashboardTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1_total + it.level2_total))
             binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1_total))

@@ -64,6 +64,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun initObservables() {
+
+        homeViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
+            binding.babyNickname.text = it.nickName
+        })
+
         homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, { record ->
             recordData = record
             binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber(record?.level1 ?: 0))

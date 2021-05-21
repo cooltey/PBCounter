@@ -6,12 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.cooltey.punchbabycounter.database.Record
 import org.cooltey.punchbabycounter.database.Summary
+import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.repository.RecordRepository
+import org.cooltey.punchbabycounter.repository.UserRepository
 import org.cooltey.punchbabycounter.utils.GeneralUtil
 
 class DashboardViewModel(context: Context) : ViewModel() {
 
+    private var userRepository = UserRepository(context)
     private var recordRepository = RecordRepository(context)
+
+    fun getUserInfo(userId: Long): LiveData<User> {
+        return userRepository.getUserById(userId)
+    }
 
     fun getSummaryByUserId(userId: Long): LiveData<Summary> {
         return recordRepository.getSummaryRecordByUserId(userId)
