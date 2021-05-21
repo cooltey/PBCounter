@@ -35,6 +35,11 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun resetCounters() {
+        _leftCounter.value = 0
+        _rightCounter.value = 0
+    }
+
     private val _recordNote = MutableLiveData<String>().apply {
         value = null
     }

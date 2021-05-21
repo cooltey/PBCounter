@@ -39,27 +39,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (currentUserId > 0) {
-            profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
-                it?.let {
-                    binding.profileFirstName.editText?.setText(it.firstName)
-                    binding.profileLastName.editText?.setText(it.lastName)
-                    binding.profileNickName.editText?.setText(it.nickName)
-                    it.birthday?.let { date ->
-                        binding.profileBirthday.editText?.setText(dateFormat.format(date))
-                        calendar.timeInMillis = date.time
-                    }
-                    it.gender?.let { gender ->
-                        if (gender == "M") {
-                            binding.profileGenderMale.isChecked = true
-                        } else {
-                            binding.profileGenderFemale.isChecked = true
-                        }
-                    }
-                    binding.profileNote.editText?.setText(it.note)
-                    binding.profileVibration.isChecked = enableVibration
-                    currentUserId = it.uid
-                }
-            })
+           initObservable()
         }
 
         binding.profileVibration.setOnCheckedChangeListener { _, b ->
@@ -75,6 +55,30 @@ class ProfileFragment : Fragment() {
         binding.profileButtonSave.setOnClickListener {
             save()
         }
+    }
+
+    private fun initObservable() {
+        profileViewModel.getUserById(currentUserId).observe(viewLifecycleOwner, {
+            it?.let {
+                binding.profileFirstName.editText?.setText(it.firstName)
+                binding.profileLastName.editText?.setText(it.lastName)
+                binding.profileNickName.editText?.setText(it.nickName)
+                it.birthday?.let { date ->
+                    binding.profileBirthday.editText?.setText(dateFormat.format(date))
+                    calendar.timeInMillis = date.time
+                }
+                it.gender?.let { gender ->
+                    if (gender == "M") {
+                        binding.profileGenderMale.isChecked = true
+                    } else {
+                        binding.profileGenderFemale.isChecked = true
+                    }
+                }
+                binding.profileNote.editText?.setText(it.note)
+                binding.profileVibration.isChecked = enableVibration
+                currentUserId = it.uid
+            }
+        })
     }
 
     override fun onResume() {

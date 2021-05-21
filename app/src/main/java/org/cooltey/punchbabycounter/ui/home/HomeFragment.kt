@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         homeViewModel = HomeViewModel(requireContext())
         currentUserId = Prefs.getCurrentId(requireActivity())
+        initObservables()
         return binding.root
     }
 
@@ -46,37 +48,40 @@ class HomeFragment : Fragment() {
 
         binding.todayDate.text = showToday()
 
+        binding.touchCircleLeft.setOnClickListener {
+            homeViewModel.leftCounterIncrement()
+            vibratePhone(200)
+        }
+
+        binding.touchCircleRight.setOnClickListener {
+            homeViewModel.rightCounterIncrement()
+            vibratePhone(200)
+        }
+
+        binding.recordNote.editText?.addTextChangedListener {
+            homeViewModel.updateRecordNote(it.toString())
+        }
+    }
+
+    private fun initObservables() {
         homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, { record ->
             recordData = record
-
             binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber(record?.level1 ?: 0))
             binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, GeneralUtil.getFormattedNumber(record?.level2 ?: 0))
             record?.let {
                 binding.recordNote.editText?.setText(it.note, TextView.BufferType.EDITABLE)
                 homeViewModel.updateRecordNote(it.note.orEmpty())
             }
+        })
 
-            binding.touchCircleLeft.setOnClickListener {
-                homeViewModel.leftCounterIncrement()
-                homeViewModel.leftCounter.observe(viewLifecycleOwner, {
-                    binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber(record.level1 + it))
-                    gradientCircleUpdate(it, binding.touchCircleLeft)
-                    vibratePhone(200)
-                })
-            }
+        homeViewModel.leftCounter.observe(viewLifecycleOwner, {
+            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber((recordData?.level1 ?: 0) + it))
+            gradientCircleUpdate(it, binding.touchCircleLeft)
+        })
 
-            binding.touchCircleRight.setOnClickListener {
-                homeViewModel.rightCounterIncrement()
-                homeViewModel.rightCounter.observe(viewLifecycleOwner, {
-                    binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, GeneralUtil.getFormattedNumber(record.level2 + it))
-                    gradientCircleUpdate(it, binding.touchCircleRight)
-                    vibratePhone(400)
-                })
-            }
-
-            binding.recordNote.editText?.addTextChangedListener {
-                homeViewModel.updateRecordNote(it.toString())
-            }
+        homeViewModel.rightCounter.observe(viewLifecycleOwner, {
+            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, GeneralUtil.getFormattedNumber((recordData?.level2 ?: 0) + it))
+            gradientCircleUpdate(it, binding.touchCircleRight)
         })
     }
 
@@ -100,19 +105,12 @@ class HomeFragment : Fragment() {
         if (currentUserId <= 0) {
             return
         }
-        // TODO: not sure it is a proper way of doing multiple observe.
-        homeViewModel.leftCounter.observe(viewLifecycleOwner, { leftCounter ->
-            homeViewModel.rightCounter.observe(viewLifecycleOwner, { rightCounter ->
-                homeViewModel.recordNote.observe(viewLifecycleOwner, { recordNote ->
-                    val newRecordData = buildRecordData(leftCounter, rightCounter, recordNote)
-                    if (newRecordData != recordData) {
-                        homeViewModel.save(newRecordData) {
-                            // ignore
-                        }
-                    }
-                })
-            })
-        })
+        val newRecordData = buildRecordData(homeViewModel.leftCounter.value ?: 0, homeViewModel.rightCounter.value ?: 0, homeViewModel.recordNote.value.orEmpty())
+        if (newRecordData != recordData) {
+            homeViewModel.save(newRecordData) {
+                homeViewModel.resetCounters()
+            }
+        }
     }
 
     // TODO: have flexible levels
