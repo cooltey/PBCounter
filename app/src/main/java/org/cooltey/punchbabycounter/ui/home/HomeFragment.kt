@@ -49,16 +49,17 @@ class HomeFragment : Fragment() {
         homeViewModel.getRecordByUserId(currentUserId).observe(viewLifecycleOwner, { record ->
             recordData = record
 
-            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, record?.level1 ?: 0)
-            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, record?.level2 ?: 0)
+            binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber(record?.level1 ?: 0))
+            binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, GeneralUtil.getFormattedNumber(record?.level2 ?: 0))
             record?.let {
                 binding.recordNote.editText?.setText(it.note, TextView.BufferType.EDITABLE)
+                homeViewModel.updateRecordNote(it.note.orEmpty())
             }
 
             binding.touchCircleLeft.setOnClickListener {
                 homeViewModel.leftCounterIncrement()
                 homeViewModel.leftCounter.observe(viewLifecycleOwner, {
-                    binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, (record.level1 + it))
+                    binding.leftClickCounter.text = getString(R.string.home_left_level_prefix, GeneralUtil.getFormattedNumber(record.level1 + it))
                     gradientCircleUpdate(it, binding.touchCircleLeft)
                     vibratePhone(200)
                 })
@@ -67,7 +68,7 @@ class HomeFragment : Fragment() {
             binding.touchCircleRight.setOnClickListener {
                 homeViewModel.rightCounterIncrement()
                 homeViewModel.rightCounter.observe(viewLifecycleOwner, {
-                    binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, (record.level2 + it))
+                    binding.rightClickCounter.text = getString(R.string.home_right_level_prefix, GeneralUtil.getFormattedNumber(record.level2 + it))
                     gradientCircleUpdate(it, binding.touchCircleRight)
                     vibratePhone(400)
                 })

@@ -9,7 +9,7 @@ interface RecordDao {
     @Query("SELECT * FROM record")
     fun getAll(): LiveData<List<Record>>
 
-    @Query("SELECT * FROM record WHERE user_id IN (:userId)")
+    @Query("SELECT * FROM record WHERE user_id IN (:userId) AND (level_1 != 0 OR level_2 != 0) ORDER BY date DESC")
     fun getAllByUserId(userId: Long): LiveData<List<Record>>
 
     @Query("SELECT * FROM record WHERE uid IN (:recordId)")

@@ -1,6 +1,7 @@
 package org.cooltey.punchbabycounter.utils
 
 import com.google.android.material.textfield.TextInputLayout
+import java.text.DecimalFormat
 import java.util.*
 
 object GeneralUtil {
@@ -16,5 +17,9 @@ object GeneralUtil {
 
     fun getEditString(view: TextInputLayout): String {
         return view.editText?.text.toString()
+    }
+
+    fun getFormattedNumber(number: Long): String {
+        return DecimalFormat("###,###,###").format(number)
     }
 }

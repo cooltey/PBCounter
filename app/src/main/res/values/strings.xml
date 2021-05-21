@@ -22,15 +22,15 @@
 
     <!-- Home -->
     <string name="home_record_note">Note for today</string>
-    <string name="home_left_level_prefix">L1: %d</string>
-    <string name="home_right_level_prefix">L2: %d</string>
+    <string name="home_left_level_prefix">L1: %s</string>
+    <string name="home_right_level_prefix">L2: %s</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_summary_title">Summary</string>
-    <string name="dashboard_total_counts">Total: %d</string>
-    <string name="dashboard_level_1_counts">Level 1: %d</string>
-    <string name="dashboard_level_2_counts">Level 2: %d</string>
-    <string name="dashboard_note">Note: $s</string>
+    <string name="dashboard_summary_title">Lifetime summary</string>
+    <string name="dashboard_total_counts">Total: %s</string>
+    <string name="dashboard_level_1_counts">Level 1: %s</string>
+    <string name="dashboard_level_2_counts">Level 2: %s</string>
+    <string name="dashboard_note">Note: %s</string>
     <string name="dashboard_most_counts_day">Most counts day: %s</string>
 
     <!-- Prefs -->

@@ -6,6 +6,7 @@
     <color name="colorSecondVariant">#F7D25D</color>
     <color name="colorBackground">#CCBD8A</color>
     <color name="cardColorBackground">#F5E8BC</color>
+    <color name="cardColorBackgroundLight">#F8F2DD</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
