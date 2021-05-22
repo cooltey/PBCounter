@@ -43,6 +43,10 @@ class RecordRepository(context: Context) {
         return recordDao.getSummaryById(userId)
     }
 
+    fun getMonthlySummaryRecordByUserId(userId: Long, date: String): LiveData<Summary> {
+        return recordDao.getMonthlySummaryById(userId, date)
+    }
+
     fun insertRecord(record: Record, callback: Callback) {
         Observable.fromCallable { recordDao.insert(record) }
             .subscribeOn(Schedulers.io())

@@ -27,6 +27,8 @@ class DashboardFragment : Fragment() {
     private lateinit var dashboardViewModel: DashboardViewModel
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private val dateYearFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+    private val dateQueryFormat = SimpleDateFormat("yyyy-MM-01", Locale.getDefault())
+    private val dateTextFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     private var currentUserId = -1L
     private var showByMode = 0
 
@@ -66,7 +68,7 @@ class DashboardFragment : Fragment() {
 
         dashboardViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
             it?.let {
-                binding.dashboardSummary.text = getString(R.string.dashboard_summary_title, it.nickName)
+                binding.dashboardSummary.text = getString(R.string.dashboard_summary_title)
             }
         })
 
@@ -76,6 +78,16 @@ class DashboardFragment : Fragment() {
                 binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1Total))
                 binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2Total))
                 binding.dashboardMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.summaryDate))
+            }
+        })
+
+        dashboardViewModel.getMonthlySummaryByUserId(currentUserId, dateQueryFormat.format(Date())).observe(viewLifecycleOwner, {
+            it?.let {
+                binding.dashboardMonth.text = dateTextFormat.format(Date())
+                binding.dashboardMonthlyTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1Total + it.level2Total))
+                binding.dashboardMonthlyLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1Total))
+                binding.dashboardMonthlyLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2Total))
+                binding.dashboardMonthlyMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.summaryDate))
             }
         })
 

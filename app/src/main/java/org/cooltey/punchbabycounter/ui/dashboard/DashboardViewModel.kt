@@ -32,6 +32,9 @@ class DashboardViewModel(context: Context) : ViewModel() {
         return recordRepository.getSummaryRecordByUserId(userId)
     }
 
+    fun getMonthlySummaryByUserId(userId: Long, date: String): LiveData<Summary> {
+        return recordRepository.getMonthlySummaryRecordByUserId(userId, date)
+    }
 
     fun getList(userId: Long): LiveData<List<Any>> {
         return if (orderBy.value == 0) {
