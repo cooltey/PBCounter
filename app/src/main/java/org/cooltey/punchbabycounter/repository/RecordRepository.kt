@@ -27,6 +27,10 @@ class RecordRepository(context: Context) {
         return recordDao.getAllByUserId(userId)
     }
 
+    fun getRecordsByUserIdGroupByMonth(userId: Long): LiveData<List<Summary>> {
+        return recordDao.getAllByUserIdGroupByMonth(userId)
+    }
+
     fun getRecordById(id: Long): LiveData<Record> {
         return recordDao.getById(id)
     }

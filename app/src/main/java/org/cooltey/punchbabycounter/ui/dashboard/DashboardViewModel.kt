@@ -27,4 +27,8 @@ class DashboardViewModel(context: Context) : ViewModel() {
     fun getListByUserId(userId: Long): LiveData<List<Record>> {
         return recordRepository.getRecordsByUserId(userId)
     }
+
+    fun getListByUserIdGroupByMonth(userId: Long): LiveData<List<Summary>> {
+        return recordRepository.getRecordsByUserIdGroupByMonth(userId)
+    }
 }

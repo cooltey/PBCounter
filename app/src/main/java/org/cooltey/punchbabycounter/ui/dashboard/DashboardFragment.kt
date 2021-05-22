@@ -25,11 +25,13 @@ class DashboardFragment : Fragment() {
     private lateinit var dashboardViewModel: DashboardViewModel
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private var currentUserId = -1L
+    private var showByMode = 0L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         dashboardViewModel = DashboardViewModel(requireContext())
         currentUserId = Prefs.getCurrentId(requireActivity())
+        showByMode = Prefs.showBy(requireActivity())
         return binding.root
     }
 
@@ -40,15 +42,25 @@ class DashboardFragment : Fragment() {
             (requireActivity() as MainActivity).goToProfileTab()
         }
 
+        if (showByMode == 0L) {
+            binding.dashboardShowByDay.isChecked = true
+        } else {
+            binding.dashboardShowByMonth.isChecked = true
+        }
+
+        binding.dashboardShowByGroup.setOnCheckedChangeListener { _, i ->
+            Prefs.showBy(requireActivity(), if (i == R.id.dashboardShowByDay) 0L else 1L)
+        }
+
         dashboardViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
             binding.dashboardSummary.text = getString(R.string.dashboard_summary_title, it.nickName)
         })
 
         dashboardViewModel.getSummaryByUserId(currentUserId).observe(viewLifecycleOwner, {
-            binding.dashboardTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1_total + it.level2_total))
-            binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1_total))
-            binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2_total))
-            binding.dashboardMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.date))
+            binding.dashboardTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1Total + it.level2Total))
+            binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1Total))
+            binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2Total))
+            binding.dashboardMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.summaryDate))
         })
 
         dashboardViewModel.getListByUserId(currentUserId).observe(viewLifecycleOwner, {
