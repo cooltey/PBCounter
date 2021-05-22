@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.cooltey.punchbabycounter.MainActivity
 import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.Record
+import org.cooltey.punchbabycounter.database.Summary
 import org.cooltey.punchbabycounter.databinding.FragmentDashboardBinding
 import org.cooltey.punchbabycounter.databinding.ViewDashboardItemBinding
 import org.cooltey.punchbabycounter.utils.GeneralUtil
@@ -24,8 +26,9 @@ class DashboardFragment : Fragment() {
 
     private lateinit var dashboardViewModel: DashboardViewModel
     private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    private val dateYearFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
     private var currentUserId = -1L
-    private var showByMode = 0L
+    private var showByMode = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
@@ -42,15 +45,24 @@ class DashboardFragment : Fragment() {
             (requireActivity() as MainActivity).goToProfileTab()
         }
 
-        if (showByMode == 0L) {
+        if (showByMode == 0) {
             binding.dashboardShowByDay.isChecked = true
         } else {
             binding.dashboardShowByMonth.isChecked = true
         }
-
+        dashboardViewModel.updateOrderBy(showByMode)
         binding.dashboardShowByGroup.setOnCheckedChangeListener { _, i ->
-            Prefs.showBy(requireActivity(), if (i == R.id.dashboardShowByDay) 0L else 1L)
+            val newOrderBy = if (i == R.id.dashboardShowByDay) 0 else 1
+            Prefs.showBy(requireActivity(), newOrderBy)
+            dashboardViewModel.updateOrderBy(newOrderBy)
+            binding.dashboardRecycler.adapter?.notifyDataSetChanged()
         }
+
+        dashboardViewModel.orderBy.observe(viewLifecycleOwner, {
+            dashboardViewModel.getList(currentUserId).removeObservers(this)
+            observeList()
+            binding.dashboardRecycler.adapter?.notifyDataSetChanged()
+        })
 
         dashboardViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
             it?.let {
@@ -67,16 +79,20 @@ class DashboardFragment : Fragment() {
             }
         })
 
-        dashboardViewModel.getListByUserId(currentUserId).observe(viewLifecycleOwner, {
+        binding.dashboardRecycler.setHasFixedSize(true)
+        binding.dashboardRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        observeList()
+    }
+
+    private fun observeList() {
+        dashboardViewModel.getList(currentUserId).observe(viewLifecycleOwner, {
             it?.let {
-                binding.dashboardRecycler.setHasFixedSize(true)
                 binding.dashboardRecycler.adapter = RecyclerViewAdapter(it)
-                binding.dashboardRecycler.layoutManager = LinearLayoutManager(requireActivity())
             }
         })
     }
 
-    private inner class RecyclerViewAdapter(private val list: List<Record>) : RecyclerView.Adapter<ListItemHolder>() {
+    private inner class RecyclerViewAdapter(private val list: List<Any>) : RecyclerView.Adapter<ListItemHolder>() {
         override fun getItemCount(): Int {
             return list.size
         }
@@ -86,7 +102,11 @@ class DashboardFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ListItemHolder, pos: Int) {
-            holder.bindItem(list[pos])
+            if (list[pos] is Record) {
+                holder.bindItem(list[pos] as Record)
+            } else if (list[pos] is Summary) {
+                holder.bindItem(list[pos] as Summary)
+            }
         }
     }
 
@@ -100,6 +120,13 @@ class DashboardFragment : Fragment() {
             } ?: run {
                 binding.dashboardNote.visibility = View.GONE
             }
+        }
+
+        fun bindItem(summary: Summary) {
+            binding.dashboardDate.text = dateYearFormat.format(summary.summaryDate)
+            binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(summary.level1Total))
+            binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(summary.level2Total))
+            binding.dashboardNote.visibility = View.GONE
         }
     }
 

@@ -32,16 +32,16 @@ object Prefs {
         return sharedPref.getBoolean(activity.getString(R.string.prefs_enable_vibration), false)
     }
 
-    fun showBy(activity: Activity, mode: Long) {
+    fun showBy(activity: Activity, mode: Int) {
         val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
         with (sharedPref.edit()) {
-            putLong(activity.getString(R.string.prefs_show_by), mode)
+            putInt(activity.getString(R.string.prefs_show_by), mode)
             apply()
         }
     }
 
-    fun showBy(activity: Activity): Long {
+    fun showBy(activity: Activity): Int {
         val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return 0
-        return sharedPref.getLong(activity.getString(R.string.prefs_show_by), 0)
+        return sharedPref.getInt(activity.getString(R.string.prefs_show_by), 0)
     }
 }

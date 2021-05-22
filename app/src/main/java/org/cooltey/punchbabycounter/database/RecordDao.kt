@@ -12,7 +12,7 @@ interface RecordDao {
     @Query("SELECT * FROM record WHERE user_id IN (:userId) AND (level_1 != 0 OR level_2 != 0) ORDER BY date DESC")
     fun getAllByUserId(userId: Long): LiveData<List<Record>>
 
-    @Query("SELECT SUM(level_1) AS level_1_total, SUM(level_2) AS level_2_total, STRFTIME('%Y-%m-01',  date(date / 1000, 'unixepoch')) as summary_date FROM record WHERE user_id IN (:userId) GROUP BY STRFTIME('%Y-%m-01', summary_date) ORDER BY summary_date DESC")
+    @Query("SELECT SUM(level_1) AS level_1_total, SUM(level_2) AS level_2_total, date as summary_date, STRFTIME('%Y-%m-01',  date(date / 1000, 'unixepoch')) as group_date FROM record WHERE user_id IN (:userId) GROUP BY STRFTIME('%Y-%m-01', group_date) ORDER BY group_date DESC")
     fun getAllByUserIdGroupByMonth(userId: Long): LiveData<List<Summary>>
 
     @Query("SELECT * FROM record WHERE uid IN (:recordId)")
