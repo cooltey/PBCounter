@@ -53,20 +53,26 @@ class DashboardFragment : Fragment() {
         }
 
         dashboardViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
-            binding.dashboardSummary.text = getString(R.string.dashboard_summary_title, it.nickName)
+            it?.let {
+                binding.dashboardSummary.text = getString(R.string.dashboard_summary_title, it.nickName)
+            }
         })
 
         dashboardViewModel.getSummaryByUserId(currentUserId).observe(viewLifecycleOwner, {
-            binding.dashboardTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1Total + it.level2Total))
-            binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1Total))
-            binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2Total))
-            binding.dashboardMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.summaryDate))
+            it?.let {
+                binding.dashboardTotalCounts.text = getString(R.string.dashboard_total_counts, GeneralUtil.getFormattedNumber(it.level1Total + it.level2Total))
+                binding.dashboardLevel1Counts.text = getString(R.string.dashboard_level_1_counts, GeneralUtil.getFormattedNumber(it.level1Total))
+                binding.dashboardLevel2Counts.text = getString(R.string.dashboard_level_2_counts, GeneralUtil.getFormattedNumber(it.level2Total))
+                binding.dashboardMostCountsDay.text = getString(R.string.dashboard_most_counts_day, dateFormat.format(it.summaryDate))
+            }
         })
 
         dashboardViewModel.getListByUserId(currentUserId).observe(viewLifecycleOwner, {
-            binding.dashboardRecycler.setHasFixedSize(true)
-            binding.dashboardRecycler.adapter = RecyclerViewAdapter(it)
-            binding.dashboardRecycler.layoutManager = LinearLayoutManager(requireActivity())
+            it?.let {
+                binding.dashboardRecycler.setHasFixedSize(true)
+                binding.dashboardRecycler.adapter = RecyclerViewAdapter(it)
+                binding.dashboardRecycler.layoutManager = LinearLayoutManager(requireActivity())
+            }
         })
     }
 
