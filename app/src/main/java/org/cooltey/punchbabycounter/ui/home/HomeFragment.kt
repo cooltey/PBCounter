@@ -1,5 +1,6 @@
 package org.cooltey.punchbabycounter.ui.home
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import org.cooltey.punchbabycounter.MainActivity
 import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.Record
+import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.databinding.FragmentHomeBinding
 import org.cooltey.punchbabycounter.utils.GeneralUtil
 import org.cooltey.punchbabycounter.utils.Prefs
@@ -28,6 +30,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var homeViewModel: HomeViewModel
+    private lateinit var userInfo: User
     private var currentUserId = -1L
     private var recordData: Record? = null
 
@@ -51,11 +54,13 @@ class HomeFragment : Fragment() {
         binding.touchCircleLeft.setOnClickListener {
             homeViewModel.leftCounterIncrement()
             vibratePhone(200)
+            showNoteDialog()
         }
 
         binding.touchCircleRight.setOnClickListener {
             homeViewModel.rightCounterIncrement()
-            vibratePhone(200)
+            vibratePhone(250)
+            showNoteDialog()
         }
 
         binding.recordNote.editText?.addTextChangedListener {
@@ -66,6 +71,7 @@ class HomeFragment : Fragment() {
     private fun initObservables() {
 
         homeViewModel.getUserInfo(currentUserId).observe(viewLifecycleOwner, {
+            userInfo = it
             binding.babyNickname.text = it.nickName
         })
 
@@ -155,5 +161,16 @@ class HomeFragment : Fragment() {
     private fun gradientCircleUpdate(counter: Long, view: View) {
         view.alpha = counter.toFloat() / homeViewModel.maxCount
         // TODO: return to normal opacity after %d seconds
+    }
+
+    private fun showNoteDialog() {
+        val totalCount = (homeViewModel.leftCounter.value ?: 0) + (homeViewModel.rightCounter.value ?: 0)
+        if ((totalCount % homeViewModel.maxCount) == 0L) {
+            AlertDialog.Builder(requireContext())
+                .setCancelable(false)
+                .setMessage(userInfo.note)
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->  dialog.dismiss() }
+                .show()
+        }
     }
 }
