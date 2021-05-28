@@ -10,6 +10,8 @@ class ProfileViewModel(context: Context) : ViewModel() {
 
     private var repo = UserRepository(context)
 
+    var showList = true
+
     var getUserList = repo.getUserList()
 
     fun getUserById(id: Long): LiveData<User> {

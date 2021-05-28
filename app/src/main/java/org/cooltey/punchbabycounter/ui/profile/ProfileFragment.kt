@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.databinding.FragmentProfileBinding
+import org.cooltey.punchbabycounter.databinding.ViewProfileItemBinding
 import org.cooltey.punchbabycounter.utils.GeneralUtil
 import org.cooltey.punchbabycounter.utils.Prefs
 import java.text.SimpleDateFormat
@@ -79,6 +80,14 @@ class ProfileFragment : Fragment() {
                 currentUserId = it.uid
             }
         })
+        profileViewModel.getUserList.observe(viewLifecycleOwner, { list ->
+            list.forEach {
+                val itemBinding = ViewProfileItemBinding.inflate(LayoutInflater.from(requireContext()))
+                itemBinding.profileLastName.text = it.lastName
+                itemBinding.profileFirstName.text = it.firstName
+                binding.profileList.addView(itemBinding.root)
+            }
+        })
     }
 
     override fun onResume() {
@@ -95,13 +104,19 @@ class ProfileFragment : Fragment() {
         if (currentUserId <= 0) {
             binding.newProfileButton.visibility = View.VISIBLE
             binding.scrollViewContainer.visibility = View.GONE
+            binding.profileListContainer.visibility = View.GONE
             binding.newProfileButton.setOnClickListener {
                 binding.newProfileButton.visibility = View.GONE
                 binding.scrollViewContainer.visibility = View.VISIBLE
             }
+        } else if (profileViewModel.showList){
+            binding.newProfileButton.visibility = View.GONE
+            binding.scrollViewContainer.visibility = View.GONE
+            binding.profileListContainer.visibility = View.VISIBLE
         } else {
             binding.newProfileButton.visibility = View.GONE
             binding.scrollViewContainer.visibility = View.VISIBLE
+            binding.profileListContainer.visibility = View.GONE
         }
     }
 
