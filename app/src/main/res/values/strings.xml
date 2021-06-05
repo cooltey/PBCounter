@@ -18,7 +18,8 @@
     <string name="profile_baby_gender_female">Female</string>
     <string name="profile_baby_note">Note for yourself.</string>
     <string name="profile_baby_new_profile">New profile</string>
-    <string name="profile_baby_enable_vibration">Enable vibration</string>
+    <string name="profile_baby_enable_vibration">Vibration</string>
+    <string name="profile_baby_active">Active</string>
 
     <!-- Home -->
     <string name="home_record_note">Note for today</string>
