@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import org.cooltey.punchbabycounter.MainActivity
 import org.cooltey.punchbabycounter.R
 import org.cooltey.punchbabycounter.database.User
 import org.cooltey.punchbabycounter.databinding.FragmentProfileBinding
@@ -18,7 +19,7 @@ import org.cooltey.punchbabycounter.utils.Prefs
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), MainActivity.OnBackPressedListener {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
@@ -34,6 +35,7 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         profileViewModel = ProfileViewModel(requireContext())
         enableVibration = Prefs.enableVibration(requireActivity())
+        (requireActivity() as MainActivity).onBackPressedListener = this
         return binding.root
     }
 
@@ -51,6 +53,12 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.newProfileButton.setOnClickListener {
+            binding.newProfileButton.visibility = View.GONE
+            binding.scrollViewContainer.visibility = View.VISIBLE
+            loadProfile(-1)
+        }
+
         binding.profileButtonSave.setOnClickListener {
             save()
         }
@@ -58,6 +66,7 @@ class ProfileFragment : Fragment() {
 
     private fun initObservable() {
         profileViewModel.getUserList.observe(viewLifecycleOwner, { list ->
+            binding.profileList.removeAllViewsInLayout()
             userNumbers = list.size
             list.forEach { user ->
                 val itemBinding = ViewProfileItemBinding.inflate(LayoutInflater.from(requireContext()))
@@ -67,8 +76,6 @@ class ProfileFragment : Fragment() {
                     itemBinding.profileBirthday.text = dateFormat.format(birthday)
                 }
                 itemBinding.profileEdit.setOnClickListener {
-                    profileViewModel.showList = false
-                    showViews()
                     loadProfile(user.uid)
                 }
                 binding.profileList.addView(itemBinding.root)
@@ -77,29 +84,41 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadProfile(userId: Long) {
-        profileViewModel.getUserById(userId).observe(viewLifecycleOwner, {
-            binding.profileFirstName.editText?.setText(it.firstName)
-            binding.profileLastName.editText?.setText(it.lastName)
-            binding.profileNickName.editText?.setText(it.nickName)
-            it.birthday?.let { date ->
-                binding.profileBirthday.editText?.setText(dateFormat.format(date))
-                calendar.timeInMillis = date.time
-            }
-            it.gender?.let { gender ->
-                if (gender == "M") {
-                    binding.profileGenderMale.isChecked = true
-                } else {
-                    binding.profileGenderFemale.isChecked = true
+        profileViewModel.showList = false
+        showViews()
+        if (userId > 0) {
+            profileViewModel.getUserById(userId).observe(viewLifecycleOwner, {
+                binding.profileFirstName.editText?.setText(it.firstName)
+                binding.profileLastName.editText?.setText(it.lastName)
+                binding.profileNickName.editText?.setText(it.nickName)
+                it.birthday?.let { date ->
+                    binding.profileBirthday.editText?.setText(dateFormat.format(date))
+                    calendar.timeInMillis = date.time
                 }
-            }
-            binding.profileNote.editText?.setText(it.note)
-            binding.profileVibration.isChecked = enableVibration
-            binding.profileActive.isChecked = it.uid == Prefs.getCurrentId(requireActivity())
-            if (userNumbers == 1) {
-                binding.profileActive.isEnabled = false
-            }
-            currentUserId = it.uid
-        })
+                it.gender?.let { gender ->
+                    if (gender == "M") {
+                        binding.profileGenderMale.isChecked = true
+                    } else {
+                        binding.profileGenderFemale.isChecked = true
+                    }
+                }
+                binding.profileNote.editText?.setText(it.note)
+                binding.profileVibration.isChecked = enableVibration
+                binding.profileActive.isChecked = it.uid == Prefs.getCurrentId(requireActivity())
+                if (userNumbers == 1) {
+                    binding.profileActive.isEnabled = false
+                }
+                currentUserId = it.uid
+            })
+        } else {
+            binding.profileFirstName.editText?.text?.clear()
+            binding.profileLastName.editText?.text?.clear()
+            binding.profileNickName.editText?.text?.clear()
+            binding.profileNote.editText?.text?.clear()
+            binding.profileActive.isChecked = false
+            binding.profileActive.isEnabled = true
+            currentUserId = userId
+        }
     }
 
     override fun onResume() {
@@ -115,18 +134,8 @@ class ProfileFragment : Fragment() {
 
     private fun showViews() {
         when {
-            Prefs.getCurrentId(requireActivity()) <= 0 -> {
-                binding.newProfileButton.visibility = View.VISIBLE
-                binding.scrollViewContainer.visibility = View.GONE
-                binding.profileListContainer.visibility = View.GONE
-                binding.newProfileButton.setOnClickListener {
-                    binding.newProfileButton.visibility = View.GONE
-                    binding.scrollViewContainer.visibility = View.VISIBLE
-                }
-            }
             profileViewModel.showList -> {
-                binding.profileList.removeAllViewsInLayout()
-                binding.newProfileButton.visibility = View.GONE
+                binding.newProfileButton.visibility = View.VISIBLE
                 binding.scrollViewContainer.visibility = View.GONE
                 binding.profileListContainer.visibility = View.VISIBLE
             }
@@ -185,5 +194,14 @@ class ProfileFragment : Fragment() {
 
         profileViewModel.showList = true
         showViews()
+    }
+
+    override fun onBackPressed() {
+        if (!profileViewModel.showList) {
+            profileViewModel.showList = true
+            showViews()
+        } else {
+            requireActivity().finish()
+        }
     }
 }

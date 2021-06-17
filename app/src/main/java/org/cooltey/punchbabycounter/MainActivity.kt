@@ -11,7 +11,12 @@ import org.cooltey.punchbabycounter.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    fun interface OnBackPressedListener {
+        fun onBackPressed()
+    }
+
     private lateinit var binding: ActivityMainBinding
+    var onBackPressedListener: OnBackPressedListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +28,10 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_profile))
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+    }
+
+    override fun onBackPressed() {
+        onBackPressedListener?.onBackPressed() ?: super.onBackPressed()
     }
 
     fun goToProfileTab() {
